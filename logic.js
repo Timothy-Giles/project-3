@@ -1,90 +1,61 @@
-// Build the metadata panel
-function buildMetadata(sample) {
-    console.log("Building metadata for sample:", sample);
-
-    d3.json("SQL/cleaned_data.json").then((data) => {
-        console.log("Data loaded:", data);
-
-        // Get the metadata field
-        let metadata = data;
-        console.log("Metadata:", metadata);
-
-        // Filter the metadata for the object with the desired sample number
-        let resultArray = metadata.filter(sampleObj => sampleObj.id == sample);
-        let result = resultArray[0];
-        console.log("Filtered metadata result:", result);
-
-        // Use d3 to select the panel with id of `#model-metadata`
-        let PANEL = d3.select("#model-metadata");
-        console.log("Selected panel:", PANEL);
-
-        // Use `.html("") to clear any existing metadata
-        PANEL.html("");
-        console.log("Panel cleared");
-
-        // Inside a loop, use d3 to append new tags for each key-value in the filtered metadata
-        Object.entries(result).forEach(([key, value]) => {
-            PANEL.append("h6").text(`${key.toUpperCase()}: ${value}`);
-            console.log(`Appended: ${key.toUpperCase()}: ${value}`);
-        });
-
-        console.log("Metadata panel populated");
-    //error handling    
+// Function to load and process the data
+function loadData() {
+    return d3.json("SQL/cleaned_data.json").then(data => {
+        // Process the data if needed
+        return data;
     }).catch(error => {
-        console.error("Error loading data:", error);
+        console.error("Error loading the data:", error);
     });
 }
 
-  // Function to build charts (e.g., bar chart)
-function buildCharts(sample) {
-    console.log("Building charts for sample:", sample);
+// Function to build charts
+function buildCharts(data, selectedModel) {
+    // Filter data for the selected model
+    let filteredData = data.filter(car => car.model === selectedModel);
 
-    d3.json("SQL/cleaned_data.json").then((data) => {
-        console.log("Data loaded for charts:", data);
+    // Add more charts as needed
+}
 
-        // Filter the data for the object with the desired sample number
-        let sampleData = data.samples.filter(sampleObj => sampleObj.id == sample)[0];
-        console.log("Filtered sample data for charts:", sampleData);
+// Function to update metadata
+function updateMetadata(data, selectedModel) {
+    let metadata = d3.select("#model-metadata");
+    metadata.html(""); // Clear existing metadata
 
-        //Add visualizations below
+    let filteredData = data.filter(car => car.model === selectedModel);
+    let aggregateInfo = {
+        averageRange: d3.mean(filteredData, d => parseInt(d.electric_range)),
+        totalCars: filteredData.length,
+        // Add more aggregate information as needed
+    };
 
+    Object.entries(aggregateInfo).forEach(([key, value]) => {
+        metadata.append("p").text(`${key}: ${value}`);
     });
 }
 
 // Function to initialize the dashboard
 function init() {
-    console.log("Initializing dashboard");
-
-    let selector = d3.select("#selDataset");
-    console.log("Dropdown selector:", selector);
-
-    // Populate the dropdown menu
-    d3.json("SQL/cleaned_data.json").then((data) => {
-        console.log("Data loaded for initialization:", data);
-
-
-        data.forEach((sample) => {
-            selector
-                .append("option")
-                .text(sample.make)
-                .property("Make", sample.make);
-                console.log(`Appended option: ${sample.make}`);
+    loadData().then(data => {
+        // Populate the dropdown menu
+        let dropdown = d3.select("#selDataset");
+        let models = [...new Set(data.map(car => car.model))];
+        models.forEach(model => {
+            dropdown.append("option").text(model).property("value", model);
         });
 
-        // Build the initial metadata and charts
-        let firstSample = data[0];
-        console.log("First sample:", firstSample);
-
-        buildMetadata(firstSample);
-        //buildCharts(firstSample);
+        // Initialize charts with the first model
+        let initialModel = models[0];
+        buildCharts(data, initialModel);
+        updateMetadata(data, initialModel);
     });
 }
 
-// Function to handle changes in the dropdown menu
-function optionChanged(newSample) {
-    console.log("Option changed to new sample:", newSample);
-    buildMetadata(newSample);
-    //buildCharts(newSample);
+// Function to handle changes in the dropdown selection
+function optionChanged(selectedModel) {
+    loadData().then(data => {
+        buildCharts(data, selectedModel);
+        updateMetadata(data, selectedModel);
+    });
 }
 
 // Initialize the dashboard
