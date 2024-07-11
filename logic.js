@@ -2,11 +2,11 @@
 function buildMetadata(sample) {
     console.log("Building metadata for sample:", sample);
 
-    d3.json("https://drive.google.com/uc?export=download&id=1WKc7ci8oOYH6LG22kzDRpBtyBFZ2WDvS").then((data) => {
+    d3.json("SQL/cleaned_data.json").then((data) => {
         console.log("Data loaded:", data);
 
         // Get the metadata field
-        let metadata = data.metadata;
+        let metadata = data;
         console.log("Metadata:", metadata);
 
         // Filter the metadata for the object with the desired sample number
@@ -39,7 +39,7 @@ function buildMetadata(sample) {
 function buildCharts(sample) {
     console.log("Building charts for sample:", sample);
 
-    d3.json("https://drive.google.com/uc?export=download&id=1WKc7ci8oOYH6LG22kzDRpBtyBFZ2WDvS").then((data) => {
+    d3.json("SQL/cleaned_data.json").then((data) => {
         console.log("Data loaded for charts:", data);
 
         // Filter the data for the object with the desired sample number
@@ -59,22 +59,20 @@ function init() {
     console.log("Dropdown selector:", selector);
 
     // Populate the dropdown menu
-    d3.json("https://drive.google.com/uc?export=download&id=1WKc7ci8oOYH6LG22kzDRpBtyBFZ2WDvS").then((data) => {
+    d3.json("SQL/cleaned_data.json").then((data) => {
         console.log("Data loaded for initialization:", data);
 
-        let sampleNames = data.names;
-        console.log("Sample names:", sampleNames);
 
-        sampleNames.forEach((sample) => {
+        data.forEach((sample) => {
             selector
                 .append("option")
-                .text(sample)
-                .property("value", sample);
-                console.log(`Appended option: ${sample}`);
+                .text(sample.make)
+                .property("Make", sample.make);
+                console.log(`Appended option: ${sample.make}`);
         });
 
         // Build the initial metadata and charts
-        let firstSample = sampleNames[0];
+        let firstSample = data[0];
         console.log("First sample:", firstSample);
 
         buildMetadata(firstSample);
