@@ -23,7 +23,7 @@ function updateMetadata(data, selectedModel) {
 
     let filteredData = data.filter(car => car.model === selectedModel);
     let aggregateInfo = {
-        averageRange: d3.mean(filteredData, d => parseInt(d.electric_range)),
+        Average_Range: d3.mean(filteredData, d => parseInt(d.electric_range)).toFixed(2),
         totalCars: filteredData.length,
         // Add more aggregate information as needed
     };
@@ -39,6 +39,10 @@ function init() {
         // Populate the dropdown menu
         let dropdown = d3.select("#selDataset");
         let models = [...new Set(data.map(car => car.model))];
+
+        // Sort the models alphabetically
+        models.sort((a, b) => a.localeCompare(b));
+        
         models.forEach(model => {
             dropdown.append("option").text(model).property("value", model);
         });
