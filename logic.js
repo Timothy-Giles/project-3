@@ -60,3 +60,4 @@ function optionChanged(selectedModel) {
 
 // Initialize the dashboard
 init();
+
