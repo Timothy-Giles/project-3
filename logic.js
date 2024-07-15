@@ -25,48 +25,72 @@ function buildBarChart(data, selectedModel) {
         topModels.push({model: "Others", count: othersCount});
     }
 
-    let colors = topModels.map(entry => 
-        entry.model === selectedModel ? 'rgb(255,99,71)' : 
+    let colors = topModels.map(entry =>
+        entry.model === selectedModel ? 'rgb(255,99,71)' :
         entry.model === "Others" ? 'rgb(169,169,169)' : 'rgb(158,202,225)'
     );
 
-    let trace = {
-        x: topModels.map(entry => entry.model),
-        y: topModels.map(entry => entry.count),
+    // Create the chart using Chart.js
+    let ctx = document.getElementById('bar').getContext('2d');
+    let barChart = new Chart(ctx, {
         type: 'bar',
-        marker: {
-            color: colors,
-            opacity: 0.6,
-            line: {
-                color: 'rgb(8,48,107)',
-                width: 1.5
+        data: {
+            labels: topModels.map(entry => entry.model),
+            datasets: [{
+                label: 'Number of Cars',
+                data: topModels.map(entry => entry.count),
+                backgroundColor: colors,
+                borderColor: 'rgb(8,48,107)',
+                borderWidth: 1.5,
+                hoverBackgroundColor: 'rgba(0,0,0,0.2)',
+                hoverBorderColor: 'rgba(0,0,0,0.2)'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Model'
+                    },
+                    ticks: {
+                        maxRotation: 90,
+                        minRotation: 45
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Number of Cars'
+                    }
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Total Cars by Model (Top 20)'
+                }
             }
         }
-    };
+    });
 
-    let layout = {
-        title: 'Total Cars by Model (Top 20)',
-        xaxis: { 
-            title: 'Model',
-            tickangle: -45,
-            automargin: true
-        },
-        yaxis: { 
-            title: 'Number of Cars',
-            automargin: true
-        },
-        height: 600,
-        margin: {
-            l: 50,
-            r: 50,
-            b: 150,
-            t: 50,
-            pad: 4
-        },
-        bargap: 0.05
-    };
-
-    Plotly.newPlot('bar', [trace], layout);
+    // Animate the chart using Anime.js (makes the bars grow during initialization)
+    anime({
+              //an array of numerical values representing the bar heights (number of cars) in the bar chart
+        targets: barChart.data.datasets[0].data,
+              //creates an array of the car counts for the top models, which corresponds to the final values each bar in the chart should animate to
+        value: topModels.map(entry => entry.count),
+        //rounded to the nearest integer during the animation
+        round: 1,
+        //easing function that starts the animation slowly, accelerates, and then slows down again
+        easing: 'easeInOutQuad',
+        duration: 15000,
+        update: function(anim) {
+            //continuous update
+            barChart.update();
+        }
+    });
 }
 
 // Function to build pie chart
