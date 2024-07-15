@@ -25,7 +25,7 @@ The dataset used in this project was sourced from data.gov on electric vehicle p
 
 We also ensured our visualizations were not biased and were fair by including all make and models and not intentionally omitting  certain make or models. Further, we included all regions of Washington state and did not omit or exclude any areas to ensure fairness. 
 
-# References for the data source(s)
+# References
 Electric Vehicle Population data set from data.gov: https://catalog.data.gov/dataset/electric-vehicle-population-data
 
 We referenced the Belly Button homework assignment to start the JSON file.
