@@ -11,8 +11,15 @@ function loadData() {
     });
 }
 
+// Declare a variable to hold the chart reference
+let barChart;
 // Function to build bar chart
 function buildBarChart(data, selectedModel) {
+    // If a chart already exists, destroy it
+    if (barChart) {
+        barChart.destroy();
+    }
+    
     // Count the number of cars for each model
     let modelData = d3.rollup(data, v => v.length, d => d.model);
     let modelEntries = Array.from(modelData, ([key, value]) => ({model: key, count: value}));
@@ -29,10 +36,11 @@ function buildBarChart(data, selectedModel) {
         entry.model === selectedModel ? 'rgb(255,99,71)' :
         entry.model === "Others" ? 'rgb(169,169,169)' : 'rgb(158,202,225)'
     );
-
+    
+    
     // Create the chart using Chart.js
     let ctx = document.getElementById('bar').getContext('2d');
-    let barChart = new Chart(ctx, {
+    barChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: topModels.map(entry => entry.model),
@@ -261,10 +269,14 @@ async function createBubbleMap(data) {
 
 // Function to update metadata
 function updateMetadata(data, selectedMake, selectedModel) {
+    console.log("Updating Metadata for Make:", selectedMake, "Model:", selectedModel); // Debugging line
+
     let metadata = d3.select("#model-metadata");
     metadata.html(""); // Clear existing metadata
 
     let filteredData = data.filter(car => car.make === selectedMake);
+    console.log("Filtered Data:", filteredData); // Debugging line
+
     let models = [...new Set(filteredData.map(car => car.model))];
 
     let aggregateInfo = {
@@ -311,6 +323,7 @@ async function init() {
 
 // Function to handle changes in the make dropdown selection
 function makeChanged(selectedMake) {
+    console.log("Selected Make:", selectedMake); // Debugging line
     let filteredData = globalData.filter(car => car.make === selectedMake);
     
     // Update the model dropdown
@@ -331,10 +344,12 @@ function makeChanged(selectedMake) {
 
 // Function to handle changes in the model dropdown selection
 function optionChanged(selectedModel) {
+    console.log("Selected Model:", selectedModel);
+
     let selectedMake = d3.select("#selMake").property("value");
     buildBarChart(globalData, selectedModel);
+    buildPieChart(globalData, selectedMake);  // Add this line
     updateMetadata(globalData, selectedMake, selectedModel);
 }
-
 // Initialize the dashboard
 init();
