@@ -11,6 +11,11 @@ Our group focused on the visualization track and our deliverable is an interacti
 
 The dashboard will allow users to make informed decisions on which electric cars are most popular, aggregate snapshot about the make and which areas most cars are registered.
 
+# Project Files
+- JSON file: SQL folder contains files used to clean the data source for the project. The final JSON file is labeled "cleaned_data.json"
+- HTML file: located in main directory under the README and is labeled "index.html"
+- Javascript file: located in the main directory under the index.html file and is labeled "logic.js"
+
 # Website Features and Usage
 - Users can select a car make or car model from the drop-down menu located at the upper left hand corner of the webpage. Once a selection is made users are able to view:
     - Aggregate car information  on the card below the drop-down menu
